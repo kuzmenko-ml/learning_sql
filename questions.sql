@@ -43,3 +43,31 @@ SELECT EXTRACT(YEAR FROM invoicedate) AS year, SUM(total)
 FROM invoice
 GROUP BY EXTRACT(YEAR FROM invoicedate)
 ORDER BY EXTRACT(YEAR FROM invoicedate);
+-- Наступний запит. Два варіанта виконаня. Спочатку перша частина завдання Q5. (Яка країна заробила більше?)
+WITH country_total AS (
+	SELECT billingcountry AS country, SUM(total) AS income
+	FROM invoice 
+	WHERE EXTRACT(YEAR FROM invoicedate) = '2011'
+	GROUP BY country
+)
+
+SELECT country, income 
+FROM country_total
+ORDER BY income DESC
+LIMIT 1;
+-- Ось тут виконання завдання повністтю (CTE залишається без змін), але в результаті немає відображення назви країни.
+-- Тут відображається найбільша сума яку заробила країна. Потім загалом скільки дохід за рік. А також розрахунок 
+-- (від загального доходу скільки відсотків дохід цієї країни)
+SELECT MAX(income) AS top_income,
+	   SUM(income) AS total_income, 
+       (MAX(income) / SUM(income)) * 100.0 AS percentage
+FROM country_total;
+-- Тут нарешті розібралась як вивести все разом (без колонки із загальним доходом, який і не треба виводити, 
+-- бо значення потрібне тільки у розрахунку). Країна, її дохід (який є найбільшим), відсоток від загального доходу.
+SELECT 
+    country,
+    income,
+    (income / (SELECT SUM(income) FROM country_total)) * 100.0 AS percentage
+FROM country_total
+ORDER BY income DESC
+LIMIT 1;
