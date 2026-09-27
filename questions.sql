@@ -33,3 +33,13 @@ WHERE purchase_count = (
     WHERE sub.country = country_track_counts.country
 )
 ORDER BY purchase_count DESC;
+-- Перший запит допоміжний, щоб я зорієнтувалась як писати другий(основне завдання)
+SELECT SUM(total)
+FROM invoice
+WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
+LIMIT 10;
+
+SELECT EXTRACT(YEAR FROM invoicedate) AS year, SUM(total)
+FROM invoice
+GROUP BY EXTRACT(YEAR FROM invoicedate)
+ORDER BY EXTRACT(YEAR FROM invoicedate);
