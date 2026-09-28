@@ -80,28 +80,22 @@ WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
 GROUP BY t.name 
 ORDER BY COUNT(il.trackid) DESC
 LIMIT 1;
--- Спробувала написати запит Q7. Get the most purchased song of each year. Безуспішно. Треба переробити, працює не так чомусь
+-- 
 WITH invoicedate_trackid AS (
-	SELECT EXTRACT(YEAR FROM i.invoicedate) AS invoice_year, t.name AS song, COUNT(il.trackid) AS purchase_count
+	SELECT EXTRACT(YEAR FROM i.invoicedate) AS invoice_year, t.name AS song, COUNT(il.trackid) AS track_count
 	FROM invoiceline il
 	INNER JOIN track t ON t.trackid = il.trackid
 	INNER JOIN invoice i ON i.invoiceid = il.invoiceid
 	GROUP BY EXTRACT(YEAR FROM i.invoicedate), t.name
+	ORDER BY EXTRACT(YEAR FROM i.invoicedate), track_count DESC
 )
 
-SELECT invoice_year, song
+SELECT invoice_year, song, track_count
 FROM invoicedate_trackid
-WHERE purchase_count = (
-	SELECT MAX(sub.purchase_count)
+WHERE track_count = (
+	SELECT MAX(sub.track_count)
 	FROM invoicedate_trackid sub
 	WHERE sub.invoice_year = invoicedate_trackid.invoice_year
 )
-GROUP BY invoice_year, song
 ORDER BY invoice_year, song;
-
-SELECT EXTRACT(YEAR FROM i.invoicedate) AS invoice_year, t.name AS song, COUNT(il.trackid)
-FROM invoiceline il
-INNER JOIN track t ON t.trackid = il.trackid
-INNER JOIN invoice i ON i.invoiceid = il.invoiceid
-GROUP BY EXTRACT(YEAR FROM i.invoicedate), t.name
 ;
