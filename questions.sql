@@ -71,3 +71,12 @@ SELECT
 FROM country_total
 ORDER BY income DESC
 LIMIT 1;
+
+SELECT t.name, COUNT(il.trackid)
+FROM invoice i
+INNER JOIN invoiceline il ON il.invoiceid = i.invoiceid
+INNER JOIN track t ON t.trackid = il.trackid
+WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
+GROUP BY t.name 
+ORDER BY COUNT(il.trackid) DESC
+LIMIT 1;
