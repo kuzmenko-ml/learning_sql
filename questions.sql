@@ -78,14 +78,21 @@ FROM country_total
 ORDER BY income DESC
 LIMIT 1;
 
-SELECT t.name, COUNT(il.trackid)
-FROM invoice i
-INNER JOIN invoiceline il ON il.invoiceid = i.invoiceid
-INNER JOIN track t ON t.trackid = il.trackid
-WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
-GROUP BY t.name 
-ORDER BY COUNT(il.trackid) DESC
-LIMIT 1;
+--  Q6. Get the most purchased song of 2009
+WITH most_purchased_song_of_2009 AS (
+	SELECT t.name AS song_name, COUNT(il.trackid) AS song_count
+	FROM invoice i
+	INNER JOIN invoiceline il ON il.invoiceid = i.invoiceid
+	INNER JOIN track t ON t.trackid = il.trackid
+	WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
+	GROUP BY t.name 
+	ORDER BY COUNT(il.trackid) DESC
+)
+SELECT song_name, song_count
+FROM most_purchased_song_of_2009
+WHERE song_count = (
+	SELECT MAX(song_count) FROM most_purchased_song_of_2009
+);
 -- 
 WITH invoicedate_trackid AS (
 	SELECT EXTRACT(YEAR FROM i.invoicedate) AS invoice_year, t.name AS song, COUNT(il.trackid) AS track_count
