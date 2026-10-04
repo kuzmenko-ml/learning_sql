@@ -93,7 +93,8 @@ FROM most_purchased_song_of_2009
 WHERE song_count = (
 	SELECT MAX(song_count) FROM most_purchased_song_of_2009
 );
--- 
+
+--  Q7. Get the most purchased song of each yea
 WITH invoicedate_trackid AS (
 	SELECT EXTRACT(YEAR FROM i.invoicedate) AS invoice_year, t.name AS song, COUNT(il.trackid) AS track_count
 	FROM invoiceline il
@@ -102,7 +103,6 @@ WITH invoicedate_trackid AS (
 	GROUP BY EXTRACT(YEAR FROM i.invoicedate), t.name
 	ORDER BY EXTRACT(YEAR FROM i.invoicedate), track_count DESC
 )
-
 SELECT invoice_year, song, track_count
 FROM invoicedate_trackid
 WHERE track_count = (
@@ -111,7 +111,6 @@ WHERE track_count = (
 	WHERE sub.invoice_year = invoicedate_trackid.invoice_year
 )
 ORDER BY invoice_year, song;
-;
 
 WITH yearly_customers AS (
 	SELECT EXTRACT(YEAR FROM invoicedate) AS invoice_year, customerid, SUM(total) AS total_spent
