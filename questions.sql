@@ -112,12 +112,12 @@ WHERE track_count = (
 )
 ORDER BY invoice_year, song;
 
+--  Q8. Get the name and total expenditure of the top consumers each year
 WITH yearly_customers AS (
 	SELECT EXTRACT(YEAR FROM invoicedate) AS invoice_year, customerid, SUM(total) AS total_spent
 	FROM invoice
 	GROUP BY EXTRACT(YEAR FROM invoicedate), customerid
 )
-
 SELECT invoice_year, customerid, total_spent
 FROM yearly_customers
 WHERE total_spent = (
