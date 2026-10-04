@@ -5,6 +5,7 @@ INNER JOIN album al ON al.albumid = t.albumid
 INNER JOIN artist ar ON ar.artistid = al.artistid 
 INNER JOIN genre g ON g.genreid = t.genreid
 WHERE g.name = 'Pop';
+
 -- Q2. Get the title, album and genre of all songs by AC/DC
 SELECT t.name AS song_name, al.title AS album_title, g.name AS genre, a.name AS artist
 FROM track t
@@ -15,6 +16,7 @@ WHERE a.name = 'AC/DC';
 
 -- Тут CTE тобто віконна функція яка допомагає розвантажити складну задачу.
 -- Результат запиту це таблиця, вона не існує в БД. Але до цієї таблиці-результату можна писати інший запит.
+-- Q3. Get the most purchased song of 2012 in each country
 WITH country_track_counts AS (
 	SELECT 
 			i.billingcountry AS country,
@@ -34,24 +36,27 @@ WHERE purchase_count = (
     WHERE sub.country = country_track_counts.country
 )
 ORDER BY purchase_count DESC;
+
+-- Q4. How much money was spent each year?
 -- Перший запит допоміжний, щоб я зорієнтувалась як писати другий(основне завдання)
 SELECT SUM(total)
 FROM invoice
 WHERE EXTRACT(YEAR FROM invoicedate) = '2009'
 LIMIT 10;
-
+-- Цей запит вже виконує завдання
 SELECT EXTRACT(YEAR FROM invoicedate) AS year, SUM(total)
 FROM invoice
 GROUP BY EXTRACT(YEAR FROM invoicedate)
 ORDER BY EXTRACT(YEAR FROM invoicedate);
--- Наступний запит. Два варіанта виконаня. Спочатку перша частина завдання Q5. (Яка країна заробила більше?)
+
+-- Q5. Which country spent the most in 2011? What percentage from 2011's total does it represent?
+-- Два варіанта виконаня. Спочатку перша частина завдання Q5. (Яка країна заробила більше?)
 WITH country_total AS (
 	SELECT billingcountry AS country, SUM(total) AS income
 	FROM invoice 
 	WHERE EXTRACT(YEAR FROM invoicedate) = '2011'
 	GROUP BY country
 )
-
 SELECT country, income 
 FROM country_total
 ORDER BY income DESC
